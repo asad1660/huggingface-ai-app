@@ -17,10 +17,10 @@ export default function ChatWindow() {
 
     try {
       const result = await queryTextModel(input);
-      const reply = result?.[0]?.generated_text || "No response";
+      const reply = result || "No response";
       setMessages((prev) => [...prev, `🤖: ${reply}`]);
     } catch (err) {
-      setMessages((prev) => [...prev, "Error from model"]);
+      setMessages((prev) => [...prev, "❌ Error from model"]);
     } finally {
       setInput("");
       setLoading(false);
@@ -35,7 +35,7 @@ export default function ChatWindow() {
             {msg}
           </div>
         ))}
-        {loading && <p>Thinking...</p>}
+        {loading && <p>🤔 Thinking...</p>}
       </div>
 
       <form onSubmit={handleSubmit} className="flex gap-2">

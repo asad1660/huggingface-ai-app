@@ -1,42 +1,34 @@
+// Call OpenRouter via /api/chat
 export async function queryTextModel(prompt: string) {
-  const res = await fetch(
-    "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        inputs: prompt,
-      }),
-    }
-  );
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prompt }),
+  });
 
   if (!res.ok) {
-    throw new Error("Failed to get response from Hugging Face");
+    throw new Error("Failed to get chat response");
   }
 
   const data = await res.json();
-  return data;
+
+  // This assumes your API returns: { message: "response string here" }
+  return data.message;
 }
+
+// Stays as is — for image-to-text
 export async function queryImageToText(file: File) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch(
-    "https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-      },
-      body: formData,
-    }
-  );
+  const res = await fetch("/api/image-to-text", {
+    method: "POST",
+    body: formData,
+  });
 
   if (!res.ok) throw new Error("Failed to get caption");
 
-  const result = await res.json();
-  return result;
+  return await res.json();
 }
